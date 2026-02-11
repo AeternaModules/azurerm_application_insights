@@ -1,6 +1,6 @@
-variable "application_insightss" {
+variable "application_insightses" {
   description = <<EOT
-Map of application_insightss, attributes below
+Map of application_insightses, attributes below
 Required:
     - application_type
     - location
@@ -25,15 +25,15 @@ EOT
     location                              = string
     name                                  = string
     resource_group_name                   = string
-    daily_data_cap_in_gb                  = optional(number, 100)
+    daily_data_cap_in_gb                  = optional(number) # Default: 100
     daily_data_cap_notifications_disabled = optional(bool)
-    disable_ip_masking                    = optional(bool, false)
-    force_customer_storage_for_profiler   = optional(bool, false)
-    internet_ingestion_enabled            = optional(bool, true)
-    internet_query_enabled                = optional(bool, true)
-    local_authentication_disabled         = optional(bool, false)
-    retention_in_days                     = optional(number, 90)
-    sampling_percentage                   = optional(number, 100)
+    disable_ip_masking                    = optional(bool)   # Default: false
+    force_customer_storage_for_profiler   = optional(bool)   # Default: false
+    internet_ingestion_enabled            = optional(bool)   # Default: true
+    internet_query_enabled                = optional(bool)   # Default: true
+    local_authentication_disabled         = optional(bool)   # Default: false
+    retention_in_days                     = optional(number) # Default: 90
+    sampling_percentage                   = optional(number) # Default: 100
     tags                                  = optional(map(string))
     workspace_id                          = optional(string)
   }))

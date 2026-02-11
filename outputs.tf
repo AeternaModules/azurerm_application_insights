@@ -1,5 +1,5 @@
-output "application_insightss" {
+output "application_insightses" {
   description = "All application_insights resources"
-  value       = azurerm_application_insights.application_insightss
+  value       = azurerm_application_insights.application_insightses
 }
 
