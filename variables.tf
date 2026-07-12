@@ -1,6 +1,6 @@
-variable "application_insightses" {
+variable "application_insights" {
   description = <<EOT
-Map of application_insightses, attributes below
+Map of application_insights, attributes below
 Required:
     - application_type
     - location
@@ -43,14 +43,6 @@ EOT
     internet_ingestion_enabled            = optional(bool)   # Default: true
     workspace_id                          = optional(string)
   }))
-  validation {
-    condition = alltrue([
-      for k, v in var.application_insightses : (
-        contains(["web", "other", "java", "MobileCenter", "phone", "store", "ios", "Node.JS"], v.application_type)
-      )
-    ])
-    error_message = "must be one of: web, other, java, MobileCenter, phone, store, ios, Node.JS"
-  }
   # --- Unconfirmed validation candidates, derived from azurerm_application_insights's provider source ---
   # Not auto-enabled: either a bespoke provider validator we can't safely translate,
   # or a path that crosses a list-typed block (needs its own for_each wrapping).
@@ -71,6 +63,9 @@ EOT
   #   source:    [from resourcegroups.ValidateName] !matched
   # path: location
   #   source:    location.EnhancedValidate: no recognizable `if ... { errors = append(...) }` pattern - read it by hand
+  # path: application_type
+  #   condition: contains(["web", "other", "java", "MobileCenter", "phone", "store", "ios", "Node.JS"], value)
+  #   message:   must be one of: web, other, java, MobileCenter, phone, store, ios, Node.JS
   # path: workspace_id
   #   source:    [from workspaces.ValidateWorkspaceID] !ok
   # path: workspace_id

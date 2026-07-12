@@ -1,5 +1,5 @@
-resource "azurerm_application_insights" "application_insightses" {
-  for_each = var.application_insightses
+resource "azurerm_application_insights" "application_insights" {
+  for_each = var.application_insights
 
   application_type                      = each.value.application_type
   location                              = each.value.location
