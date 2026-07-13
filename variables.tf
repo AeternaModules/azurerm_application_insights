@@ -28,19 +28,19 @@ EOT
     location                              = string
     name                                  = string
     resource_group_name                   = string
-    sampling_percentage                   = optional(number) # Default: 100
-    retention_in_days                     = optional(number) # Default: 90
+    sampling_percentage                   = optional(number)
+    retention_in_days                     = optional(number)
     local_authentication_enabled          = optional(bool)
     local_authentication_disabled         = optional(bool)
     ip_masking_enabled                    = optional(bool)
-    internet_query_enabled                = optional(bool) # Default: true
-    force_customer_storage_for_profiler   = optional(bool) # Default: false
+    internet_query_enabled                = optional(bool)
+    force_customer_storage_for_profiler   = optional(bool)
     tags                                  = optional(map(string))
     disable_ip_masking                    = optional(bool)
     daily_data_cap_notifications_enabled  = optional(bool)
     daily_data_cap_notifications_disabled = optional(bool)
-    daily_data_cap_in_gb                  = optional(number) # Default: 100
-    internet_ingestion_enabled            = optional(bool)   # Default: true
+    daily_data_cap_in_gb                  = optional(number)
+    internet_ingestion_enabled            = optional(bool)
     workspace_id                          = optional(string)
   }))
   # --- Unconfirmed validation candidates, derived from azurerm_application_insights's provider source ---
