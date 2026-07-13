@@ -43,52 +43,70 @@ EOT
     internet_ingestion_enabled            = optional(bool)
     workspace_id                          = optional(string)
   }))
-  # --- Unconfirmed validation candidates, derived from azurerm_application_insights's provider source ---
-  # Not auto-enabled: either a bespoke provider validator we can't safely translate,
-  # or a path that crosses a list-typed block (needs its own for_each wrapping).
-  # Review, translate into a real validation{} block above, and delete once confirmed.
-  # path: resource_group_name
-  #   condition: length(value) <= 90
-  #   message:   [from resourcegroups.ValidateName: invalid when len(value) > 90]
-  #   source:    [from resourcegroups.ValidateName: invalid when len(value) > 90]
-  # path: resource_group_name
-  #   condition: !endswith(value, ".")
-  #   message:   [from resourcegroups.ValidateName: must not end with "."]
-  #   source:    [from resourcegroups.ValidateName: must not end with "."]
-  # path: resource_group_name
-  #   condition: length(value) != 0
-  #   message:   [from resourcegroups.ValidateName: invalid when len(value) == 0]
-  #   source:    [from resourcegroups.ValidateName: invalid when len(value) == 0]
-  # path: resource_group_name
-  #   source:    [from resourcegroups.ValidateName] !matched
-  # path: location
-  #   source:    location.EnhancedValidate: no recognizable `if ... { errors = append(...) }` pattern - read it by hand
-  # path: application_type
-  #   condition: contains(["web", "other", "java", "MobileCenter", "phone", "store", "ios", "Node.JS"], value)
-  #   message:   must be one of: web, other, java, MobileCenter, phone, store, ios, Node.JS
-  # path: workspace_id
-  #   source:    [from workspaces.ValidateWorkspaceID] !ok
-  # path: workspace_id
-  #   source:    [from workspaces.ValidateWorkspaceID] err != nil
-  # path: retention_in_days
-  #   source:    validation.IntInSlice(...) - no translation rule yet, add one
-  # path: sampling_percentage
-  #   source:    validation.FloatBetween(...) - no translation rule yet, add one
-  # path: tags
-  #   condition: length(value) <= 50
-  #   message:   [from tags.Validate: invalid when len(value) > 50]
-  #   source:    [from tags.Validate: invalid when len(value) > 50]
-  # path: tags
-  #   condition: length(value) <= 512
-  #   message:   [from tags.Validate: invalid when len(value) > 512]
-  #   source:    [from tags.Validate: invalid when len(value) > 512]
-  # path: tags
-  #   source:    [from tags.Validate] err != nil
-  # path: tags
-  #   condition: length(value) <= 256
-  #   message:   [from tags.Validate: invalid when len(value) > 256]
-  #   source:    [from tags.Validate: invalid when len(value) > 256]
-  # path: daily_data_cap_in_gb
-  #   source:    validation.FloatAtLeast(...) - no translation rule yet, add one
+  validation {
+    condition = alltrue([
+      for k, v in var.application_insights : (
+        length(v.resource_group_name) <= 90
+      )
+    ])
+    error_message = "[from resourcegroups.ValidateName: invalid when len(value) > 90]"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.application_insights : (
+        !endswith(v.resource_group_name, ".")
+      )
+    ])
+    error_message = "[from resourcegroups.ValidateName: must not end with \".\"]"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.application_insights : (
+        length(v.resource_group_name) != 0
+      )
+    ])
+    error_message = "[from resourcegroups.ValidateName: invalid when len(value) == 0]"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.application_insights : (
+        contains(["web", "other", "java", "MobileCenter", "phone", "store", "ios", "Node.JS"], v.application_type)
+      )
+    ])
+    error_message = "must be one of: web, other, java, MobileCenter, phone, store, ios, Node.JS"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.application_insights : (
+        v.retention_in_days == null || (contains([30, 60, 90, 120, 180, 270, 365, 550, 730], v.retention_in_days))
+      )
+    ])
+    error_message = "must be one of: 30, 60, 90, 120, 180, 270, 365, 550, 730"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.application_insights : (
+        v.sampling_percentage == null || (v.sampling_percentage >= 0 && v.sampling_percentage <= 100)
+      )
+    ])
+    error_message = "must be between 0 and 100"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.application_insights : (
+        v.tags == null || (length(v.tags) <= 50)
+      )
+    ])
+    error_message = "[from tags.Validate: invalid when len(value) > 50]"
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.application_insights : (
+        v.daily_data_cap_in_gb == null || (v.daily_data_cap_in_gb >= 0)
+      )
+    ])
+    error_message = "must be at least 0"
+  }
+  # Note: 7 additional provider-side validators are enforced at apply time but not mirrored as validation{} blocks here (bespoke or non-mechanically-translatable).
 }
 
